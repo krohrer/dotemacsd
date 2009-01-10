@@ -8,6 +8,7 @@
  '(paren-match-face (quote paren-face-match-light))
  '(paren-sexp-mode t)
  '(truncate-partial-width-windows nil)
+ '(time-stamp-format "%U, %3a %3b %2d %02H:%02M:%02S %Z %:y")
  '(tuareg-library-path "/Users/krohrer/godi/lib/ocaml/std-lib"))
 
 ;; Set regular expression rules for syntax coloring

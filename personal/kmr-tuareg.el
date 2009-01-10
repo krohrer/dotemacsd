@@ -3,14 +3,7 @@
 (eval-when-compile (require 'tuareg))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Auxiliary functions
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(fset 'kmr-ocaml-ssep [return ?( ?* escape ?3 ?6 ?- ?* ?) tab return])
-(fset 'kmr-ocaml-lsep [return ?( ?* escape ?7 ?6 ?- ?* ?) tab return])
-(fset 'kmr-ocaml-template [?( ?* ?  ?$ ?I ?d ?$ ?  ?* ?) return return ?( ?* escape ?7 ?6 ?- ?* ?) return return ?( ?* escape ?7 ?6 ?- ?* ?) return])
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;; Integration
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq auto-mode-alist (cons '("\\.ml\\w?" . tuareg-mode) auto-mode-alist))
 (autoload 'tuareg-mode "tuareg" "Major mode for editing Caml code" t)
@@ -19,15 +12,74 @@
 (add-hook 'tuareg-mode-hook #'tuareg-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 
+;; Keys
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun tuareg-hook ()
   "Customizes the Tuareg major mode to my liking"
   (interactive)
   (local-set-key "" 'tuareg-browse-library)
-  (local-set-key "" 'tuareg-browse-library)
-  (local-set-key "" 'tuareg-goto-module-at-point))
+  (local-set-key "" 'tuareg-goto-module-at-point)
+  (local-set-key "h" 'kmr-tuareg-insert-header)
+  (local-set-key "s" 'kmr-tuareg-insert-short-separator)
+  (local-set-key "l" 'kmr-tuareg-insert-long-separator))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Font-locking (and poppin')
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defface tuareg-font-lock-mutator-face
+  '((t (:underline t)))
+  ""
+  :group 'tuareg-faces)
+
+(defun tuareg-font-lock-hook ()
+   (font-lock-add-keywords nil
+    '(("\\<\\(raise\\|failwith\\|exit\\|assert\\|assert_\\w+\\|fail_\\w+\\)\\>"
+       1 font-lock-warning-face prepend)
+      ("\\<\\(\\(\\w\\|[_]\\)+[']\\)\\>"
+       1 font-lock-warning-face prepend))))
+
+(remove-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
+(add-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
+
+;;; (defun tuareg-search-mutator ()
+;;;   ""
+;;;   (interactive)
+;;;   (re-search-forward "\\<\\(\\(\\w\\|[_]\\)+[']\\)\\>"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Commenting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar kmr-tuareg-separator-short-length 40 
+  "Length of a short separator comment. See \\[kmr-tuareg-insert-separator]")
+
+(defvar kmr-tuareg-separator-long-length 80
+  "Length of a long separator comment. See \\[kmr-tuareg-insert-separator]")
+
+(defun kmr-tuareg-insert-header (&optional short-p)
+  "Prepends the current buffer with an OCaml comment that
+includes the current time and username"
+  (interactive)
+  (insert "(* " (time-stamp-string) " *)\n"))
+
+(defun kmr-tuareg-insert-separator (cols)
+  "Inserts a separator comment, which occupies `cols' columns, to
+break up the text."
+  (interactive "NHow many columns should the seaparator occupy: ")
+  (insert "\n(*" (make-string (- cols 4) ?-) "*)\n\n"))
+
+(defun kmr-tuareg-insert-short-separator ()
+  "Inserts a short separator. Equivalent to (\\[kmr-tuareg-insert-separator] `kmr-tuareg-short-separator')."
+  (interactive)
+  (kmr-tuareg-insert-separator kmr-tuareg-separator-short-length))
+
+(defun kmr-tuareg-insert-long-separator ()
+  "Inserts a long separator. Equivalent to (\\[kmr-tuareg-insert-separator] `kmr-tuareg-long-separator')."
+  (interactive)
+  (kmr-tuareg-insert-separator kmr-tuareg-separator-long-length))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Experimental (OCamlSpotter is the way to go in the future)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun tuareg-extract-qualified-identifer-at-point ()
   "Extracts the identifier at point, including any module
 identiers (separated by a period) that prefix it. Returns a list
@@ -75,7 +127,7 @@ with containing the identifiers in order of occurence."
 			     'tuareg-file-history)))
     (unless (and (file-directory-p dir)
 		 (file-readable-p dir))
-      (error "Could not read directory: " dir))
+      (error "Could not read directory: %s" dir))
     (setq file (tuareg-module-file-name module dir))
     (unless (file-readable-p file)
       (error (format "Could not read module file: %s" file)))
@@ -123,27 +175,3 @@ If only one identifier
 ;; 	 (ident (last qualifieds)))
 ;;     (tuareg-find-identier *tuareg-declaration-re-prefix* ident)))
 
-
-
-(defface tuareg-font-lock-mutator-face
-  '((t (:underline t)))
-  ""
-  :group 'tuareg-faces)
-
-(defun tuareg-font-lock-hook ()
-   (font-lock-add-keywords nil
-    '(("\\<\\(raise\\|failwith\\|exit\\|assert\\|assert_\\w+\\|fail_\\w+\\)\\>"
-       1 font-lock-warning-face prepend)
-      ("\\<\\(\\(\\w\\|[_]\\)+[']\\)\\>"
-       1 font-lock-warning-face prepend)
-)))
-
-(remove-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
-(add-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
-
-(add-hook 'tuareg-mode-hook 'tuareg-font-lock-hook)
-
-(defun tuareg-search-mutator ()
-  ""
-  (interactive)
-  (re-search-forward "\\<\\(\\(\\w\\|[_]\\)+[']\\)\\>"))

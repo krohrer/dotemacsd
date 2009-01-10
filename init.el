@@ -11,9 +11,14 @@
 (add-to-list 'load-path "/opt/local/share/emacs/site-lisp/w3m")
 (require 'w3m-load)
 
+(add-to-list 'load-path "~/.emacs.d/site-lisp")
+(require 'omake-mode)
+
 (add-to-list 'load-path "~/.emacs.d/personal")
 (require 'kmr-generic)
 (require 'kmr-tuareg)
+(require 'kmr-omake)
 (require 'kmr-latex)
 (require 'kmr-color-theme-library)
 (kmr-color-theme-chnuschper)
+
