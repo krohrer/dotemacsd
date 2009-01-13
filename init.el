@@ -17,8 +17,9 @@
 (add-to-list 'load-path "~/.emacs.d/personal")
 (require 'kmr-generic)
 (require 'kmr-tuareg)
-(require 'kmr-omake)
+;;; (require 'kmr-omake)
 (require 'kmr-latex)
 (require 'kmr-color-theme-library)
-(kmr-color-theme-chnuschper)
 
+(if (boundp 'window-system)
+    (kmr-color-theme-chnuschper))
