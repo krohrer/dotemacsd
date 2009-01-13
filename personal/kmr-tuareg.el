@@ -1,6 +1,7 @@
 (provide 'kmr-tuareg)
 
 (eval-when-compile (require 'tuareg))
+(eval-when-compile (require 'time-stamp))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Integration
