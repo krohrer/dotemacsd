@@ -10,7 +10,7 @@
      ((background-color . "#051e3e")
       (background-mode . dark)
       (border-color . "black")
-      (cursor-color . "red")
+      (cursor-color . "yellow")
       (foreground-color . "#eeeeee")
       (mouse-color . "white"))
      ((compilation-message-face . underline)

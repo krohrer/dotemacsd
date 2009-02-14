@@ -1,3 +1,5 @@
+;;;; Kaspar Rohrer, Thu Jan 15 01:58:13 CET 2009
+
 (provide 'kmr-tuareg)
 
 (eval-when-compile (require 'tuareg))
@@ -36,8 +38,8 @@
    (font-lock-add-keywords nil
     '(("\\<\\(raise\\|failwith\\|exit\\|assert\\|assert_\\w+\\|fail_\\w+\\)\\>"
        1 font-lock-warning-face prepend)
-      ("\\<\\(\\(\\w\\|[_]\\)+[']\\)\\>"
-       1 font-lock-warning-face prepend))))
+      ("\\<\\(\\w\\|[_]\\)+\\([']\\)\\>"
+       2 font-lock-warning-face prepend))))
 
 (remove-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
 (add-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)

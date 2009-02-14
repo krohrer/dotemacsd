@@ -1,9 +1,12 @@
 (provide 'kmr-generic)
 
+(eval-when-compile (require 'time-stamp))
+
 (ido-mode 1)
 (menu-bar-mode -1)
 (column-number-mode 1)
 (scroll-bar-mode -1)
+(blink-cursor-mode -1)
 
 ; Either :
 (transient-mark-mode -1)
@@ -16,3 +19,8 @@
 
 ; Automatically strip ^M from shell output, like omake build system.
 (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
+
+(defun kmr-insert-time-stamp ()
+  "Interactive version of time-stamp-string"
+  (interactive)
+  (insert (time-stamp-string)))
