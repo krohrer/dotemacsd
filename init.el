@@ -8,8 +8,8 @@
 (require 'color-theme)
 (color-theme-initialize)
 
-(add-to-list 'load-path "/opt/local/share/emacs/site-lisp/w3m")
-(require 'w3m-load)
+;;; (add-to-list 'load-path "/opt/local/share/emacs/site-lisp/w3m")
+;;; (require 'w3m-load)
 
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 (require 'omake-mode)
@@ -21,5 +21,5 @@
 (require 'kmr-latex)
 (require 'kmr-color-theme-library)
 
-(if (boundp 'window-system)
+(if (and (boundp 'window-system) (not (null window-system)))
     (kmr-color-theme-chnuschper))
