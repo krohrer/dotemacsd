@@ -5,6 +5,7 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(inhibit-startup-screen t)
+ '(mouse-wheel-scroll-amount (quote (1 ((shift) . 5) ((control)))))
  '(paren-match-face (quote paren-face-match-light))
  '(paren-sexp-mode t)
  '(time-stamp-format "%U, %3a %3b %2d %02H:%02M:%02S %Z %:y")

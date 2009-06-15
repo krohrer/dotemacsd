@@ -7,6 +7,7 @@
 (column-number-mode 1)
 (scroll-bar-mode -1)
 (blink-cursor-mode -1)
+(mouse-wheel-mode 1)
 
 ; Either :
 (transient-mark-mode -1)
