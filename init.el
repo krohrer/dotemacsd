@@ -8,6 +8,9 @@
 (require 'color-theme)
 (color-theme-initialize)
 
+(autoload 'js2-mode "js2" nil t)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+
 ;;; (add-to-list 'load-path "/opt/local/share/emacs/site-lisp/w3m")
 ;;; (require 'w3m-load)
 
