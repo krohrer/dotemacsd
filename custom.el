@@ -10,7 +10,7 @@
  '(paren-sexp-mode t)
  '(time-stamp-format "%U, %3a %3b %2d %02H:%02M:%02S %Z %:y")
  '(truncate-partial-width-windows nil)
- '(tuareg-library-path "/Users/krohrer/godi/lib/ocaml/std-lib"))
+ '(tuareg-library-path "/Users/krohrer/CLI/godi/lib/ocaml/std-lib"))
 
 ;; Set regular expression rules for syntax coloring
 (custom-set-faces
