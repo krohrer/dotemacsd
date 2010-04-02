@@ -10,7 +10,7 @@
      ((background-color . "#051e3e")
       (background-mode . dark)
       (border-color . "black")
-      (cursor-color . "yellow")
+      (cursor-color . "red")
       (foreground-color . "#eeeeee")
       (mouse-color . "white"))
      ((compilation-message-face . underline)
@@ -82,10 +82,10 @@
      (font-latex-warning-face ((t (:bold t :foreground "Pink" :weight bold))))
      (font-lock-builtin-face ((t (:foreground "DeepSkyBlue1")))) ;LightCoral
      (font-lock-comment-delimiter-face ((t (:italic t :slant italic :foreground "Red"))))
-     (font-lock-comment-face ((t (:italic t :foreground "Red" :slant italic))))
+     (font-lock-comment-face ((t (:foreground "Red")))) ;:italic t :slant italic
      (font-lock-constant-face ((t (:foreground "gold"))))
-     (font-lock-doc-face ((t (:foreground "Red")))) ;BlanchedAlmond
-     (font-lock-doc-string-face ((t (:foreground "Red")))) ;BlanchedAlmond
+     (font-lock-doc-face ((t (:foreground "orange red")))) ;BlanchedAlmond
+     (font-lock-doc-string-face ((t (:foreground "orange red")))) ;BlanchedAlmond
      (font-lock-function-name-face ((t (:bold t :foreground "goldenrod" :weight bold))))
      (font-lock-keyword-face ((t (:bold t :foreground "DeepSkyBlue1" :weight bold))))
      (font-lock-negation-char-face ((t (nil))))
@@ -122,12 +122,12 @@
      (match ((t (:background "RoyalBlue3"))))
      (menu ((t (:background "gray" :foreground "black" :family "helvetica"))))
      (minibuffer-prompt ((t (:foreground "cyan"))))
-     (mode-line ((t (:background "gray" :foreground "black" :box (:line-width 2 :style released-button)))))
-     (mode-line-buffer-id ((t (:background "gray" :foreground "black" :box (:line-width 2 :style released-button)))))
-     (mode-line-highlight ((t (:box (:line-width 2 :color "grey40" :style released-button)))))
-     (mode-line-inactive ((t (:background "grey30" :foreground "grey80" :box (:line-width -1 :color "grey40" :style nil) :weight light))))
-     (modeline-mousable ((t (:background "gray" :foreground "black" :box (:line-width 2 :style released-button)))))
-     (modeline-mousable-minor-mode ((t (:background "gray" :foreground "black" :box (:line-width 2 :style released-button)))))
+     (mode-line ((t (:background "white" :foreground "black" :box (:line-width 2 :style released-button)))))
+     (mode-line-buffer-id ((t (:foreground "black" :box (:line-width 1 :style released-button)))))
+     (mode-line-highlight ((t (:box (:line-width 1 :color "grey40" :style released-button)))))
+     (mode-line-inactive ((t (:background "#051020" :foreground "grey80" :box (:line-width 1 :color "#051020" :style released-button) :weight light))))
+     (modeline-mousable ((t (:background "grey" :foreground "black" :box (:line-width 2 :style released-button)))))
+     (modeline-mousable-minor-mode ((t (:background "yellow" :foreground "black" :box (:line-width 2 :style released-button)))))
      (mouse ((t (:background "white"))))
      (next-error ((t (:background "DarkCyan"))))
      (nobreak-space ((t (:foreground "cyan" :underline t))))
