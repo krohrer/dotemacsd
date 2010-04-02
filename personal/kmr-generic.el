@@ -5,7 +5,8 @@
 (ido-mode 1)
 (menu-bar-mode -1)
 (column-number-mode 1)
-(scroll-bar-mode -1)
+(if (boundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
 (blink-cursor-mode -1)
 (mouse-wheel-mode 1)
 
