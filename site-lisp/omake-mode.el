@@ -3,26 +3,47 @@
 ; in .emacs:
 ;   (add-to-list 'load-path "THE DIRECTORY THIS ELISP EXISTS")
 ;   (require 'omake-mode)
+;   (setq omake-program-path "/omake/or/jomake/path")
+;   (setq omake-program-arguments "-P -w -j 3 --verbose")
+;      ; omake command options. -w and --verbose are required for error browsing
+;   (setq omake-error-highlight-background "#880000")
+;
 ;   ; key bindings (jfuruse's setting)
 ;   (global-unset-key "\M-P") ; Shift+Alt+p 
 ;   (global-unset-key "\M-N") ; Shift+Alt+n
 ;   (global-unset-key "\M-o") ; Alt+o
 ;   (global-unset-key "\M-O") ; Shift+Alt+o
+;   (global-unset-key [(control shift o)]) ; Ctrl+Shift+o
+;
+;   (global-set-key "\M-O" 'omake-run)
+;      ; launch a new omake process in the current buffer's directory
+;
+;   (global-set-key [(control shift o)] 'omake-rerun)
+;      ; restart omake process of the current omake buffer
+;
 ;   (global-set-key "\M-P" 'omake-previous-error)
 ;   (global-set-key "\M-N" 'omake-next-error)
+;      ; visit the previous/next error of the current omake window
+;
 ;   (global-set-key "\M-o" 'omake-round-visit-buffer)
-;   (global-set-key "\M-O" 'omake-run)
+;      ; visit another omake process window
+;
+;   ; aother possibilities
+;   (global-unset-key [M-up])
+;   (global-unset-key [M-down])
+;   (global-set-key [M-up] 'omake-previous-error)
+;   (global-set-key [M-down] 'omake-next-error)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Configurables
 
 ; omake path and args
-(defconst omake-program-path "/usr/bin/omake")
-(defconst omake-program-arguments "-P -w -j 3")
+(defconst omake-program-path "/mnt/global/base/bin/jomake")
+(defconst omake-program-arguments "-P -w -j 3 --verbose")
 
 ; sounds
-(defconst omake-sound-success "..../...wav")
-(defconst omake-sound-error "..../...wav")
-(defconst omake-sound-start "..../...wav")
+(defconst omake-sound-success "/home/jfuruse/sounds/eu2/hihat.wav")
+(defconst omake-sound-error "/usr/share/sounds/pop.wav")
+(defconst omake-sound-start "/home/jfuruse/sounds/eu2/if_nope.wav")
 
 ; colors
 (defconst omake-error-highlight-background "#FFFF00")
@@ -35,12 +56,17 @@
 (defconst omake-buffer-pattern "^\*omake\*")
 (defconst omake-misc-buffer-name "*omake-misc*")
 
-(defconst omake-error-regexp "File.*line.*characters [0-9]+-[0-9]+")
+(defconst omake-error-regexp "File \"\\(.*\\)\", line \\([0-9]+\\), characters \\([0-9]+\\)-\\([0-9]+\\)")
 (defconst omake-progress-regexp "\\[\\([= ]+\\|saved \\.omakedb[= ]*\\)\\] [0-9]+ / [0-9]+\n")
-(defconst omake-directory-regexp "\\(Entering\\|Leaving\\) directory `\\(.*\\)'")
+(defconst omake-directory-regexp "- exit \\([^ ]+\\)")
+
 (defconst omake-report-regexp "\\*\\*\\* omake:.*")
-(defconst omake-rebuild-regexp "\\*\\*\\* omake: \\(rebuilding\\|reading OMakefiles\\)")
+(defconst omake-rebuild-regexp "\\*\\*\\* omake: \\(rebuilding\\|reading OMakefiles$\\)")
 (defconst omake-locked-regexp "\\*\\*\\* omake: waiting for project lock:")
+
+(defconst omake-root-regexp "\\*\\*\\* omake: changing directory to \\(.*\\)")
+
+(defvar omake-buffers nil)
 
 ; overlay
 (setq omake-overlay-log nil)
@@ -102,7 +128,6 @@
           (omake-filter-map p (cdr lst))))
     nil))
 
-(defvar omake-buffers nil)
 (defun omake-round-buffers ()
   (if omake-buffers 
       (let ((res (car omake-buffers)))
@@ -133,9 +158,10 @@
                                    nil nil nil))
   (font-lock-mode 1))
 
-(defun omake-create-buffer ()
+(defun omake-create-buffer (dir)
   (let ((buffer-name (buffer-name (generate-new-buffer omake-buffer-name))))
     (set-buffer buffer-name)
+    (cd dir)
     (omake-mode)
     (omake-set-font-lock)
     (make-local-variable 'last-progress-point)
@@ -146,6 +172,8 @@
     (setq last-line-was-end-of-build nil)
     (make-local-variable 'no-error)
     (setq no-error t)
+    (make-local-variable 'root-dir)
+    (setq root-dir dir)
     buffer-name))
 
 (defun omake-play-sound (file)
@@ -154,103 +182,114 @@
 (defun omake-insert-line (string)
   (save-excursion
     (goto-char (point-max))
-    ; (insert-before-markers string)
-    (insert string)
+    (insert-before-markers string) ; (insert string)
     ))
 
 (defun omake-insert-progress (string)
-  (save-excursion
-    (goto-char (point-max))
-    (setq last-progress-point (point))
-    ; (insert-before-markers string)
-    (insert string)))
+  (if string 
+      (save-excursion
+        (goto-char (point-max))
+        (setq last-progress-point (point))
+        (insert-before-markers string) ; (insert string)
+        (string-match " [0-9]+ / [0-9]+
+" string)
+        (setq mode-line-process (replace-match "" t nil string)))
+    (setq mode-line-process nil)))
+
+; place holder for last-progress-meter
+;; CR jfuruse: this must be buffer specific
+(setq last-progress-meter nil)
 
 (defun omake-process-filter (process output)
   (save-current-buffer
-    (let ((buffer-name (process-name process)))
-      (set-buffer buffer-name)
+    (let ((buffer (process-buffer process)))
+      ; if buffer is gone, we do nothing.
+      (if buffer 
+          (progn
+            (set-buffer buffer)
 
-      ;; concat remained output
-      (if remained-output
-          (setq output (concat remained-output output)))
-      (setq remained-output nil)
+            ;; concat remained output
+            (if remained-output
+                (setq output (concat remained-output output)))
+            (setq remained-output nil)
 
-      ;; if we print progress meter in the last call, delete it
-      (if last-progress-point
-          (save-excursion
+            ;; if we print progress meter in the last call, delete it
+            (if last-progress-point
+                (save-excursion
             (delete-region last-progress-point (point-max))))
+            
+            ;; fix  => \n
+            (while (string-match "" output) 
+              (setq output (replace-match "\n" t nil output)))
 
-      ;; fix  => \n
-      (while (string-match "" output) 
-        (setq output (replace-match "\n" t nil output)))
+            ;; remove progress meter string from log
+            (while (string-match omake-progress-regexp output)
+              ;; set the match to last-progress-meter
+              (setq last-progress-meter (match-string 0 output))
+              (setq output (replace-match "" t nil output)))
 
-      (let ((last-progress-meter nil))
+            ;; print output per line
+            (while (string-match ".*\n" output)
+        
+              ;; clear if a new make started
+              (if last-line-was-end-of-build (erase-buffer))
 
-        ;; remove progress meter string from log
-        (while (string-match omake-progress-regexp output)
-          ;; set the match to last-progress-meter
-          (setq last-progress-meter (match-string 0 output))
-          (setq output (replace-match "" t nil output)))
+              ;; get the line
+              (setq line (match-string 0 output))
+              (setq output (substring output (match-end 0)))
+              ;; and print 
+              (omake-insert-line line)
 
-        ;; print output per line
-        (while (string-match ".*\n" output)
+              ;; root
+              (if (string-match omake-root-regexp line)
+                  (setq root-dir (match-string 1 line)))
 
-          ;; clear if a new make started
-          (if last-line-was-end-of-build (erase-buffer))
+              ;; error / warning lines
+              (if (string-match omake-error-regexp line)
+                  (progn
+                    (omake-play-sound omake-sound-error)
+                    (setq no-error nil)
+                    (omake-display-buffer buffer)))
 
-          ;; get the line
-          (setq line (match-string 0 output))
-          (setq output (substring output (match-end 0)))
-          ;; and print 
-          (omake-insert-line line)
-
-          ;; error / warning lines
-          (if (string-match omake-error-regexp line)
-              (progn
-                (omake-play-sound omake-sound-error)
-                (setq no-error nil)
-                (omake-display-buffer buffer-name)))
-
-          ;; locked
-          (if (string-match omake-locked-regexp line)
-              (progn
-                (omake-play-sound omake-sound-error)
-                (setq no-error nil)
-                (omake-display-buffer buffer-name)))
-
-          (if (string-match omake-rebuild-regexp line)
-              (progn
-                (omake-play-sound omake-sound-start)))
+              ;; locked
+              (if (string-match omake-locked-regexp line)
+                  (progn
+                    (omake-play-sound omake-sound-error)
+                    (setq no-error nil)
+                    (omake-display-buffer buffer)))
+              
+              (if (string-match omake-rebuild-regexp line)
+                  (progn
+                    (omake-play-sound omake-sound-start)))
                 
-          ;; find the end of build
-          (setq last-line-was-end-of-build
-                (string-match "\\*\\*\\* omake: polling for filesystem changes" line))
-          (if last-line-was-end-of-build
-              (progn
-                (omake-insert-line "OMAKE IS WAITING YOUR CHANGE")
-                (if no-error
-                    (omake-play-sound omake-sound-success))
-                (setq no-error t)
-                (omake-display-buffer buffer-name)))
-          )
+              ;; find the end of build
+              (setq last-line-was-end-of-build
+                    (string-match "\\*\\*\\* omake: polling for filesystem changes" line))
+              (if last-line-was-end-of-build
+                  (progn
+                    (setq last-progress-meter nil)
+                    (omake-insert-line "OMAKE IS WAITING YOUR CHANGE")
+                    (if no-error
+                        (omake-play-sound omake-sound-success))
+                    (setq no-error t)
+                    (omake-display-buffer buffer)))
+              )
       
-        ;; if something left, it is not ended with \n. Keep it
-        (setq remained-output output)
+            ;; if something left, it is not ended with \n. Keep it
+            (setq remained-output output)
 
-        ;; if last-progress-meter is not "", print it
-        (setq last-progress-point nil)
-        (if last-progress-meter
-            (progn
-              (omake-insert-progress last-progress-meter)))))))
+            (setq last-progress-point nil)
+            (omake-insert-progress last-progress-meter))))))
 
 (defun omake-find-file-existing (path)
   (if (file-exists-p path)
       (find-file path) ; CR find-file-literary ?
-    (message "ERROR: source file %s was not found" path)))
+    (progn (message "ERROR: source file %s was not found" path)
+           nil)))
 
 (defun omake-display-error (dir file line char-start char-end)
   (let 
-      ((path (concat (file-name-as-directory dir) file)))
+      ((path (concat (file-name-as-directory (concat (file-name-as-directory root-dir) dir)) file)))
     (message path)
     (setq target-buffer (omake-find-file-existing path))
     (if target-buffer
@@ -261,12 +300,16 @@
                (char-of-start (+ char-of-line char-start))
                (char-of-end (+ char-of-line char-end)))
             (omake-display-overlay-source (current-buffer) char-of-start char-of-end)
-            (goto-char char-of-start))))))
+            (goto-char char-of-start))
+          target-buffer)
+      nil)))
 
 (defun omake-jump-error (next)
   (if (get-buffer omake-current-buffer)
       (progn 
         (set-buffer omake-current-buffer)
+        (if next (move-end-of-line nil)
+          (move-beginning-of-line nil))
         (display-buffer omake-current-buffer)
         (let ((found-start -1)
               (found-end -1)
@@ -279,11 +322,12 @@
           (if (progn
                 (if 
                     (if next
-                        (re-search-forward "^File \"\\(.*\\)\", line \\([0-9]+\\), characters \\([0-9]+\\)-\\([0-9]+\\)" 
+                        ; sometimes the error has tab in its head...
+                        (re-search-forward omake-error-regexp
                                            nil ; CR BOUND can be used to avoid the summary 
                                            t ; ignore not found error and return simply nil
                                            )
-                      (re-search-backward "^File \"\\(.*\\)\", line \\([0-9]+\\), characters \\([0-9]+\\)-\\([0-9]+\\)" 
+                      (re-search-backward omake-error-regexp
                                           nil t))
                     (progn
                       (setq found-start (match-beginning 0))
@@ -294,7 +338,8 @@
                       (setq char-end (string-to-int (match-string 4)))
                       (set-window-point window (if next found-end found-start))
                       (save-excursion
-                        (if (re-search-backward "Entering directory `\\(.*\\)'" nil t)
+;                        (if (re-search-backward "Entering directory `\\(.*\\)'" nil t)
+                        (if (re-search-forward omake-directory-regexp nil t)
                             (progn 
                               (setq dir (match-string 1))
                               t)
@@ -303,8 +348,8 @@
                             nil))))
                   (progn
                     (message "No more error found")
-                    (delete-overlay omake-overlay-log)
-                    (delete-overlay omake-overlay-source)
+;                    (delete-overlay omake-overlay-log)
+;                    (delete-overlay omake-overlay-source)
                     nil)))
               (progn ; search successful: highlight the error line
                 (save-current-buffer (omake-display-error dir file line char-start char-end))
@@ -325,18 +370,35 @@
   (setq major-mode 'omake-mode)
   (setq mode-name "omake mode"))
 
-(defun omake-run ()
+(defun omake-run-dir (dir)
   (interactive)
   (save-current-buffer
     (setq debug-on-error t)
-    (let* ((buffer (omake-create-buffer))
+    (let* ((buffer (omake-create-buffer dir))
            (process 
             (start-process-shell-command buffer buffer 
                                          omake-program-path
                                          omake-program-arguments)))
+      (setq last-progress-meter nil)
       (set-process-filter process 'omake-process-filter)
       (omake-display-buffer buffer)
       )))
 
-(provide 'omake-mode)
+(defun omake-run ()
+  (interactive)
+  (omake-run-dir default-directory))
 
+(defun omake-rerun ()
+  (interactive)
+  (if omake-current-buffer
+      (if (get-buffer omake-current-buffer)
+          (let ((old-buffer omake-current-buffer)
+                (dir (save-current-buffer
+                       (set-buffer omake-current-buffer)
+                       default-directory)))
+            (omake-run-dir dir)
+            (kill-buffer old-buffer))
+        (message "no current omake buffer"))
+    (message "no current omake buffer")))
+
+(provide 'omake-mode)
