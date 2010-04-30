@@ -39,10 +39,10 @@
 
 (defun tuareg-font-lock-hook ()
    (font-lock-add-keywords nil
-    '(("\\<\\(raise\\|failwith\\|exit\\|assert\\|assert_\\w+\\|fail_\\w+\\)\\>"
-       1 font-lock-warning-face prepend)
-      ("\\<\\(\\w\\|[_]\\)+\\([']\\)\\>"
-       2 font-lock-warning-face prepend))))
+    '(("\\<\\(raise\\|exit\\|assert\\w*\\|fail\\w*\\)\\>"
+       1 font-lock-warning-face prepend))))
+      ;; ("\\<\\(\\w\\|[_]\\)+\\([']\\)\\>"
+      ;;  2 font-lock-warning-face prepend))))
 
 ;(remove-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
 (add-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
