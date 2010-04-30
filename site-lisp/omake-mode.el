@@ -37,13 +37,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Configurables
 
 ; omake path and args
-(defconst omake-program-path "/mnt/global/base/bin/jomake")
+(defconst omake-program-path "/mnt/global/base/bin/omake")
 (defconst omake-program-arguments "-P -w -j 3 --verbose")
 
 ; sounds
-(defconst omake-sound-success "/home/jfuruse/sounds/eu2/hihat.wav")
-(defconst omake-sound-error "/usr/share/sounds/pop.wav")
-(defconst omake-sound-start "/home/jfuruse/sounds/eu2/if_nope.wav")
+(defconst omake-sound-success "/System/Library/Sounds/Submarine.aiff")
+(defconst omake-sound-error "/System/Library/Sounds/Basso.aiff")
+(defconst omake-sound-start "/System/Library/Sounds/Tink.aiff")
 
 ; colors
 (defconst omake-error-highlight-background "#FFFF00")
@@ -177,7 +177,7 @@
     buffer-name))
 
 (defun omake-play-sound (file)
-  (start-process "omake-sound" omake-misc-buffer-name "aplay" file))
+  (start-process "omake-sound" omake-misc-buffer-name "afplay" file))
 
 (defun omake-insert-line (string)
   (save-excursion
@@ -232,7 +232,7 @@
             (while (string-match ".*\n" output)
         
               ;; clear if a new make started
-              (if last-line-was-end-of-build (erase-buffer))
+              ;; (if last-line-was-end-of-build (erase-buffer))
 
               ;; get the line
               (setq line (match-string 0 output))
