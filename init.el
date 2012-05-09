@@ -1,8 +1,8 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-(add-to-list 'load-path "~/.emacs.d/site-lisp/tuareg-mode")
-(require 'tuareg)
+;(add-to-list 'load-path "~/.emacs.d/site-lisp/tuareg-mode")
+;(require 'tuareg)
 
 (add-to-list 'load-path "~/.emacs.d/site-lisp/color-theme")
 (require 'color-theme)
@@ -15,7 +15,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/personal")
 (require 'kmr-generic)
-(require 'kmr-tuareg)
+;(require 'kmr-tuareg)
 (require 'kmr-latex)
 (require 'kmr-color-theme-library)
 (require 'kmr-omake)
