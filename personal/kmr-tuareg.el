@@ -24,7 +24,6 @@
   (local-set-key "" 'tuareg-browse-library)
   (local-set-key "" 'tuareg-goto-module-at-point)
   (local-set-key "u" 'comment-or-uncomment-region)
-  (local-set-key "h" 'kmr-tuareg-insert-header)
   (local-set-key "d" 'kmr-tuareg-insert-ocamldoc)
   (local-set-key "s" 'kmr-tuareg-insert-short-separator)
   (local-set-key "l" 'kmr-tuareg-insert-long-separator))
@@ -60,12 +59,6 @@
 
 (defvar kmr-tuareg-separator-long-length 80
   "Length of a long separator comment. See \\[kmr-tuareg-insert-separator]")
-
-(defun kmr-tuareg-insert-header (&optional short-p)
-  "Prepends the current buffer with an OCaml comment that
-includes the current time and username"
-  (interactive)
-  (insert "(* " (time-stamp-string) " *)\n"))
 
 (defun kmr-tuareg-insert-ocamldoc ()
   "Inserts an ocamldoc comment."
