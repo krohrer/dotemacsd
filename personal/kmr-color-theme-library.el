@@ -132,7 +132,7 @@
      (next-error ((t (:background "DarkCyan"))))
      (nobreak-space ((t (:foreground "cyan" :underline t))))
      (query-replace ((t (:foreground "brown4" :background "palevioletred2"))))
-     (region ((t (:background "DarkCyan"))))
+     (region ((t (:inverse-video t))))
      (scroll-bar ((t (:background "gray" :foreground "#506070"))))
      (secondary-selection ((t (:background "yellow" :foreground "gray10"))))
      (shadow ((t (:foreground "grey70"))))

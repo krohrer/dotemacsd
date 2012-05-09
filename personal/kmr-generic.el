@@ -1,18 +1,5 @@
 (provide 'kmr-generic)
 
-(ido-mode 1)
-(menu-bar-mode -1)
-(column-number-mode 1)
-(if (boundp 'scroll-bar-mode)
-    (scroll-bar-mode -1))
-(blink-cursor-mode -1)
-(mouse-wheel-mode 1)
-
-; Either :
-(transient-mark-mode -1)
-; or :
-(show-paren-mode 1)
-
 (global-set-key [?\C-z] nil)
 (global-set-key [f1] (lambda () (interactive) (manual-entry (current-word))))
 (global-set-key [?\C-=] (lambda () (interactive) (other-window 1)))
