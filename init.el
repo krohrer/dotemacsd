@@ -35,5 +35,5 @@
 (if (fboundp 'ns-find-file)
     (global-set-key [ns-drag-file] 'ns-find-file))
 
-(if  (fboundp ns-pop-up-frames)
+(if  (fboundp 'ns-pop-up-frames)
     (ns-pop-up-frames nil))
