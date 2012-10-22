@@ -31,3 +31,9 @@
 
 (if (and (boundp 'window-system) (not (null window-system)))
     (kmr-color-theme-chnuschper))
+
+(if (fboundp 'ns-find-file)
+    (global-set-key [ns-drag-file] 'ns-find-file))
+
+(if  (fboundp ns-pop-up-frames)
+    (ns-pop-up-frames nil))
