@@ -81,11 +81,11 @@
      (font-latex-string-face ((t (:foreground "LightSalmon"))))
      (font-latex-warning-face ((t (:bold t :foreground "Pink" :weight bold))))
      (font-lock-builtin-face ((t (:foreground "DeepSkyBlue1")))) ;LightCoral
-     (font-lock-comment-delimiter-face ((t (:italic t :slant italic :foreground "DarkTurquoise"))))
-     (font-lock-comment-face ((t (:foreground "DarkTurquoise" :italic t :slant italic)))) ; :italic t :slant italic
+     (font-lock-comment-delimiter-face ((t (:foreground "HotPink1" :italic t :slant italic))))
+     (font-lock-comment-face ((t (:foreground "HotPink1" :italic t :slant italic)))) ; :italic t :slant italic
      (font-lock-constant-face ((t (:foreground "DeepSkyBlue1"))))
-     (font-lock-doc-face ((t (:foreground "BlanchedAlmond")))) ;BlanchedAlmond
-     (font-lock-doc-string-face ((t (:foreground "BlanchedAlmond")))) ;BlanchedAlmond
+     (font-lock-doc-face ((t (:foreground "HotPink1" :bold nil :weight normal)))) ;BlanchedAlmond
+     (font-lock-doc-string-face ((t (:foreground "HotPink1" :bold nil :weight normal)))) ;BlanchedAlmond
      (font-lock-function-name-face ((t (:bold t :foreground "goldenrod" :weight bold))))
      (font-lock-keyword-face ((t (:bold t :foreground "DeepSkyBlue1" :weight bold))))
      (font-lock-negation-char-face ((t (nil))))
@@ -97,6 +97,12 @@
      (font-lock-type-face ((t (:foreground "Green")))) ; CadetBlue1
      (font-lock-variable-name-face ((t (:foreground "SeaGreen2"))))
      (font-lock-warning-face ((t (:bold t :foreground "red" :weight bold))))
+     (tuareg-font-lock-error-face ((t (:bold t :background "red" :foreground "yellow" :weight bold))))
+     (tuareg-font-lock-governing-face ((t (:bold t :weight bold :foreground "DeepSkyBlue1"))))
+     (tuareg-font-lock-interactive-error-face ((t (:foreground "yellow"))))
+     (tuareg-font-lock-interactive-output-face ((t (:foreground "cyan"))))
+     (tuareg-font-lock-multistage-face ((t (:bold t :background "lightgray" :foreground "darkblue" :weight bold))))
+     (tuareg-font-lock-operator-face ((t (:bold t :weight bold :foreground "DeepSkyBlue1"))))
      (fringe ((t (:background "#102e4e"))))
      (header-line ((t (:background "grey20" :foreground "grey90" :box nil))))
      ;(help-argument-name ((t (:italic t :slant italic))))
@@ -152,12 +158,6 @@
      (tool-bar ((t (:background "grey75" :foreground "black" :box (:line-width 1 :style released-button)))))
      (tooltip ((t (:background "lightyellow" :foreground "black"))))
      (trailing-whitespace ((t (:background "#051e3e"))))
-     (tuareg-font-lock-error-face ((t (:bold t :background "red" :foreground "yellow" :weight bold))))
-     (tuareg-font-lock-governing-face ((t (:bold t :weight bold :foreground "DeepSkyBlue1"))))
-     (tuareg-font-lock-interactive-error-face ((t (:foreground "yellow"))))
-     (tuareg-font-lock-interactive-output-face ((t (:foreground "cyan"))))
-     (tuareg-font-lock-multistage-face ((t (:bold t :background "lightgray" :foreground "darkblue" :weight bold))))
-     (tuareg-font-lock-operator-face ((t (:bold t :weight bold :foreground "DeepSkyBlue1"))))
      (underline ((t (:underline t))))
      (variable-pitch ((t (:family "helv"))))
      (vertical-border ((t (nil))))
