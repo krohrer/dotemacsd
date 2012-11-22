@@ -8,7 +8,7 @@
  '(column-number-mode t)
  '(ido-mode (quote both) nil (ido))
  '(inhibit-startup-screen t)
- '(menu-bar-mode nil)
+ '(menu-bar-mode t)
  '(mouse-wheel-scroll-amount (quote (1 ((shift) . 5) ((control)))))
  '(ns-alternate-modifier (quote none))
  '(ns-command-modifier (quote meta))
@@ -16,7 +16,7 @@
  '(show-paren-mode t)
  '(time-stamp-format "%U, %3a %3b %2d %02H:%02M:%02S %Z %:y")
  '(tool-bar-mode nil)
- '(truncate-partial-width-windows nil)
+ '(truncate-partial-width-windows t)
  '(tuareg-library-path "/opt/local/lib/ocaml"))
 
 ;; Set regular expression rules for syntax coloring
