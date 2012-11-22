@@ -82,7 +82,7 @@
      (font-latex-warning-face ((t (:bold t :foreground "Pink" :weight bold))))
      (font-lock-builtin-face ((t (:foreground "DeepSkyBlue1")))) ;LightCoral
      (font-lock-comment-delimiter-face ((t (:italic t :slant italic :foreground "Red"))))
-     (font-lock-comment-face ((t (:foreground "Red")))) ;:italic t :slant italic
+     (font-lock-comment-face ((t (:foreground "Red")))) ; :italic t :slant italic
      (font-lock-constant-face ((t (:foreground "gold"))))
      (font-lock-doc-face ((t (:foreground "orange red")))) ;BlanchedAlmond
      (font-lock-doc-string-face ((t (:foreground "orange red")))) ;BlanchedAlmond
