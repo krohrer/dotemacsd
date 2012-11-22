@@ -81,11 +81,11 @@
      (font-latex-string-face ((t (:foreground "LightSalmon"))))
      (font-latex-warning-face ((t (:bold t :foreground "Pink" :weight bold))))
      (font-lock-builtin-face ((t (:foreground "DeepSkyBlue1")))) ;LightCoral
-     (font-lock-comment-delimiter-face ((t (:italic t :slant italic :foreground "Red"))))
-     (font-lock-comment-face ((t (:foreground "Red")))) ; :italic t :slant italic
-     (font-lock-constant-face ((t (:foreground "gold"))))
-     (font-lock-doc-face ((t (:foreground "orange red")))) ;BlanchedAlmond
-     (font-lock-doc-string-face ((t (:foreground "orange red")))) ;BlanchedAlmond
+     (font-lock-comment-delimiter-face ((t (:italic t :slant italic :foreground "DarkTurquoise"))))
+     (font-lock-comment-face ((t (:foreground "DarkTurquoise" :italic t :slant italic)))) ; :italic t :slant italic
+     (font-lock-constant-face ((t (:foreground "DeepSkyBlue1"))))
+     (font-lock-doc-face ((t (:foreground "BlanchedAlmond")))) ;BlanchedAlmond
+     (font-lock-doc-string-face ((t (:foreground "BlanchedAlmond")))) ;BlanchedAlmond
      (font-lock-function-name-face ((t (:bold t :foreground "goldenrod" :weight bold))))
      (font-lock-keyword-face ((t (:bold t :foreground "DeepSkyBlue1" :weight bold))))
      (font-lock-negation-char-face ((t (nil))))
