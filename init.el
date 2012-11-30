@@ -5,7 +5,7 @@
 (require 'color-theme)
 (color-theme-initialize)
 
-(setq tuareg-use-smie t)
+;(setq tuareg-use-smie t)
 (load "~/.emacs.d/site-lisp/tuareg/tuareg-site-file")
 
 ;(add-to-list 'auto-mode-alist '("\\.ml[iylp]?$" . caml-mode))
@@ -14,7 +14,7 @@
 ;(autoload 'camldebug "camldebug" "Run ocamldebug on program." t)
 ;(add-to-list 'interpreter-mode-alist '("ocamlrun" . caml-mode))
 ;(add-to-list 'interpreter-mode-alist '("ocaml" . caml-mode))
-;(add-to-list 'load-path "/opt/local/share/emacs/site-lisp/caml-mode")
+;(add-to-list 'load-path "~/.emacs.d/site-lisp/caml-mode")
 
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 (autoload 'js2-mode "js2" nil t)
