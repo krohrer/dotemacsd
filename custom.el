@@ -4,14 +4,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(blink-cursor-mode t)
+ '(browse-url-mailto-function nil)
  '(column-number-mode t)
+ '(htmlize-output-type (quote inline-css))
  '(ido-mode (quote both) nil (ido))
  '(inhibit-startup-screen t)
- '(menu-bar-mode t)
  '(mouse-wheel-scroll-amount (quote (1 ((shift) . 5) ((control)))))
  '(ns-alternate-modifier (quote none))
  '(ns-command-modifier (quote meta))
+ '(org-agenda-files (quote ("~/Documents/Orgs")))
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(time-stamp-format "%U, %3a %3b %2d %02H:%02M:%02S %Z %:y")
@@ -27,4 +28,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "#051e3e" :foreground "#eeeeee" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Monaco"))))
  '(cursor ((t (:background "Red" :foreground "white")))))
