@@ -19,14 +19,8 @@
 ;;; Load additional modes
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 
-;(autoload 'js2-mode "js2" nil t)
-;(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-
-(autoload 'markdown-mode "markdown-mode.el"
-   "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
-
-(load "~/.emacs.d/site-lisp/htmlize.el")
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 ;;; Load personal customization
 (add-to-list 'load-path "~/.emacs.d/personal")
@@ -50,3 +44,9 @@
 		  (interactive "p")
 		  (kmacro-exec-ring-item (quote ([17 tab] 0 "%d"))
 					 arg)))
+
+;;; Add melpa repositories for 
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (package-initialize)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t))
