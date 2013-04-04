@@ -77,11 +77,7 @@
 (defconst tuareg-mode-revision
   (eval-when-compile
     (with-temp-buffer
-      (cond ((file-directory-p ".git")
-	     (progn
-	       (insert "git: ")
-	       (call-process "git" nil t nil "log" "--pretty=%h" "-1")))
-	    ((file-directory-p ".hg")
+      (cond ((file-directory-p ".hg")
 	     (call-process "hg" nil t nil "id" "-i" "--debug"))
 	    ((file-directory-p ".svn")
              (let ((process-environment
@@ -1254,7 +1250,6 @@ For use on `electric-indent-functions'."
                      (decls "class" decls)
                      (decls "val" decls) (decls "external" decls)
                      (decls "open" decls) (decls "include" decls)
-		     (decls "DEFINE" decls)
                      (exception)
                      (def)
                      ;; Hack: at the top-level, a "let D in E" can appear in
@@ -1265,7 +1260,7 @@ For use on `electric-indent-functions'."
               (def-in-exp (defs "in" exp))
               (def (var "d=" exp) (id "d=" datatype) (id "d=" module))
               (idtype (id ":" type))
-              (var (id) ("m-type" var) ("rec" var) ("private" var) (idtype)
+              (var (id) ("m-type" var) ("rec" var) (idtype)
                    ("l-module" var) ("l-class" var))
               (exception (id "of" type))
               (datatype ("{" typefields "}") (typebranches)
@@ -1318,7 +1313,6 @@ For use on `electric-indent-functions'."
               (pattern (id) (pattern "as" id) (pattern "," pattern))
               (class-body (class-body "inherit" class-body)
                           (class-body "method" class-body)
-                          (class-body "initializer" class-body)
                           (class-body "val" class-body)
                           (class-body "constraint" class-body)
                           (class-field))
@@ -1371,9 +1365,9 @@ For use on `electric-indent-functions'."
             '((assoc "|") (assoc ";"))
             ;; Fix up associative declaration keywords.
             '((assoc "type" "d-let" "exception" "module" "val" "open"
-                     "external" "include" "class" "DEFINE" ";;")
+                     "external" "include" "class" ";;")
               (assoc "and"))
-            '((assoc "val" "method" "inherit" "constraint" "initializer"))
+            '((assoc "val" "method" "inherit" "constraint"))
             ;; Declare associativity of remaining sequence separators.
             '((assoc ";")) '((assoc "|")) '((assoc "m-and")))))
       ;; (dolist (pair '()) ;; ("then" . "|") ("|" . "then")
@@ -1535,16 +1529,12 @@ For use on `electric-indent-functions'."
 (defun tuareg-smie--=-disambiguate ()
   "Return which kind of \"=\" we've just found.
 Point is not moved and should be right in front of the equality.
-Return values can be
-  \"f=\" for field definition,
-  \"d=\" for a normal definition,
-  \"c=\" for a type equality constraint, and
-  \"=…\" for an equality test."
+Return values can be \"f=\" for field definition, \"d=\" for a normal definition,
+\"c=\" for a type equality constraint, and \"=…\" for an equality test."
   (save-excursion
     (let* ((pos (point))
            (telltale '("type" "let" "module" "class" "and" "external"
-                       "val" "method" "DEFINE" "="
-		       "if" "then" "else" "->" ";" ))
+                       "=" "if" "then" "else" "->" ";"))
            (nearest (tuareg-smie--search-backward telltale)))
       (cond
        ((and (member nearest '("{" ";"))
@@ -1566,8 +1556,8 @@ Return values can be
                         (equal (tuareg-smie-backward-token) "t->")))
             (setq nearest (tuareg-smie--search-backward telltale)))
           nil))
-       ((not (member nearest '("type" "let" "module" "class" "and"
-			       "external" "val" "method" "DEFINE")))
+       ((not (member nearest
+                     '("type" "let" "module" "class" "and" "external")))
         "=…")
        ((and (member nearest '("type" "module"))
              (member (tuareg-smie--backward-token) '("with" "and"))) "c=")
@@ -1712,10 +1702,6 @@ Return values can be
              (save-excursion
                (smie-backward-sexp 'halfsexp)
                (cons 'column (smie-indent-virtual))))))
-        ;; If we're looking at the first class-field-spec
-        ;; in a "object(type)...end", don't rely on the default behavior which
-        ;; will treat (type) as a previous element with which to align.
-        ((tuareg-smie--object-hanging-rule token))
         ;; Apparently, people like their `| pattern when test -> body' to have
         ;;  the `when' indented deeper than the body.
         ((equal token "when") (smie-rule-parent tuareg-match-when-indent))))
@@ -1794,28 +1780,9 @@ Return values can be
            (save-excursion
              (let ((prev (tuareg-smie-backward-token)))
                ;; FIXME: Should we use the same loop as above?
-               (and (equal prev ">…") (looking-at ">>[>=|]")
+               (and (equal prev ">…") (looking-at ">>[>=]")
                     (progn (smie-backward-sexp prev)
                            (cons 'column (current-column)))))))))
-
-(defun tuareg-smie--object-hanging-rule (token)
-  ;; If we're looking at the first class-field-spec
-  ;; in a "object(type)...end", don't rely on the default behavior which
-  ;; will treat (type) as a previous element with which to align.
-  (cond
-   ;; An important role of this first condition is to call smie-indent-virtual
-   ;; so that we get called back to compute the (virtual) indentation of
-   ;; "object", thus making sure we get called back to apply the second rule.
-   ((and (member token '("inherit" "val" "method" "constraint"))
-         (smie-rule-parent-p "object"))
-    (save-excursion
-      (forward-word 1)
-      (goto-char (nth 1 (smie-backward-sexp 'halfsexp)))
-      (let ((col (smie-indent-virtual)))
-        `(column . ,(+ tuareg-default-indent col)))))
-   ;; For "class foo = object(type)...end", align object...end with class.
-   ((and (equal token "object") (smie-rule-parent-p "class"))
-    (smie-rule-parent))))
 
 (defun tuareg-smie--if-then-hack (token)
   ;; Getting SMIE's parser to properly parse "if E1 then E2" is difficult, so
@@ -1854,9 +1821,7 @@ Return values can be
         (smie-setup tuareg-smie-grammar #'tuareg-smie-rules
                     :forward-token #'tuareg-smie-forward-token
                     :backward-token #'tuareg-smie-backward-token)
-        (add-hook 'smie-indent-functions #'tuareg-smie--inside-string nil t)
-        (set (make-local-variable 'add-log-current-defun-function)
-             'tuareg-current-fun-name))
+        (add-hook 'smie-indent-functions #'tuareg-smie--inside-string nil t))
     (set (make-local-variable 'indent-line-function) #'tuareg-indent-command))
   (tuareg-install-font-lock)
   (set (make-local-variable 'open-paren-in-column-0-is-defun-start) nil)
@@ -1978,59 +1943,6 @@ Short cuts for interactions with the toplevel:
     (abbrev-mode 1))
   (message nil))
 
-(defconst tuareg-starters-syms
-  '("module" "type" "let" "d-let" "and"))
-
-(defun tuareg-find-matching-starter (starters)
-  (let (tok)
-    (while
-        (let ((td (smie-backward-sexp 'halfsexp)))
-          (cond
-           ((and (car td)
-                 (member (nth 2 td) starters))
-            (goto-char (nth 1 td)) (setq tok (nth 2 td)) nil)
-           ((and (car td) (not (numberp (car td))))
-            (unless (bobp) (goto-char (nth 1 td)) t))
-           (t t))))
-    tok))
-
-(defun tuareg-skip-siblings ()
-  (while (and (not (bobp))
-              (null (car (smie-backward-sexp))))
-    (tuareg-find-matching-starter tuareg-starters-syms))
-  (when (looking-at "in")
-    ;; Skip over `local...in' and continue.
-    (forward-word 1)
-    (smie-backward-sexp 'halfsexp)
-    (tuareg-skip-siblings)))
-
-(defun tuareg-beginning-of-defun ()
-  (when (tuareg-find-matching-starter tuareg-starters-syms)
-    (save-excursion (tuareg-smie-forward-token)
-                    (forward-comment (point-max))
-                    (let ((name (tuareg-smie-forward-token)))
-                      (if (not (member name '("rec" "type")))
-                          name
-                        (forward-comment (point-max))
-                        (tuareg-smie-forward-token))))))
-
-(defcustom tuareg-max-name-components 3
-  "Maximum number of components to use for the current function name."
-  :type 'integer)
-
-(defun tuareg-current-fun-name ()
-  (save-excursion
-    (let ((count tuareg-max-name-components)
-	  fullname name)
-      (end-of-line)
-      (while (and (> count 0)
-		  (setq name (tuareg-beginning-of-defun)))
-	(decf count)
-	(setq fullname (if fullname (concat name "." fullname) name))
-	;; Skip all other declarations that we find at the same level.
-	(tuareg-skip-siblings))
-      fullname)))
-
 (defun tuareg-install-font-lock ()
   (setq
    tuareg-font-lock-keywords
@@ -2047,7 +1959,7 @@ Short cuts for interactions with the toplevel:
                              "module" "functor" "val" "type" "method"
                              "virtual" "constraint" "class" "in" "inherit"
                              "initializer" "let" "rec" "object" "and" "begin"
-                             "end" "DEFINE"))
+                             "end"))
                "\\|with[ \t\n]+\\(type\\|module\\)\\)\\>")
       0 tuareg-font-lock-governing-face nil nil)
      ,@(and tuareg-support-metaocaml
@@ -2174,10 +2086,7 @@ Short cuts for interactions with the toplevel:
                       (list tuareg-error-regexp
                             2 '(3 . 4) '(5 . 6) '(7 . 1))
                     (list tuareg-error-regexp 2 3))
-                  ;; Other error format used for unhandled match case.
-                  (cons '("^Fatal error: exception [^ \n]*(\"\\([^\"]*\\)\", \\([0-9]+\\), \\([0-9]+\\))"
-                          1 2 3)
-                        compilation-error-regexp-alist)))))
+                  compilation-error-regexp-alist))))
 
 ;; A regexp to extract the range info.
 
@@ -4244,7 +4153,7 @@ otherwise return non-nil."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                            Tuareg interactive mode
 
-;; Augment Tuareg mode with an OCaml toplevel.
+;; Augment Tuareg mode with a OCaml toplevel.
 
 (require 'comint)
 
@@ -4346,9 +4255,6 @@ Short cuts for interactions with the toplevel:
   (setq comint-scroll-to-bottom-on-output
         tuareg-interactive-scroll-to-bottom-on-output)
   (set-syntax-table tuareg-mode-syntax-table)
-  (set (make-local-variable 'comment-start) "(* ")
-  (set (make-local-variable 'comment-end) " *)")
-  (set (make-local-variable 'comment-start-skip) "(\\*+[ \t]*")
 
   (tuareg--common-mode-setup)
   (when (or tuareg-interactive-input-font-lock

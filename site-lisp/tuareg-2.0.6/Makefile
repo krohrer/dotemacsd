@@ -1,7 +1,7 @@
 VERSION = $(shell grep ';; Version:' tuareg.el \
 	| sed 's/;; Version: *\([0-9.]\+\).*/\1/')
 DESCRIPTION = $(shell grep ';;; tuareg.el ---' tuareg.el \
-	| sed 's/[^-]*--- *\([^.]*\).*/\1/')
+	| sed 's/[^-]*--- *\(.*\)/\1/')
 REQUIREMENTS = $(shell grep ';; Package-Requires:' tuareg.el \
 	| sed 's/;; Package-Requires: *\(.\+\).*/\1/')
 DIST_NAME = tuareg-$(VERSION)
@@ -82,11 +82,12 @@ check : sample.ml.test
 	$(DIFF) $< $@ || true
 
 tuareg-site-file.el: refresh
-	(echo ";;; $@ --- Automatically extracted autoloads.";\
-	 echo ";;; Code:";\
-	 echo "(add-to-list 'load-path";\
-	 echo "             (or (file-name-directory load-file-name) (car load-path)))";\
-	 echo "") >$@
+	echo "\
+	;;; $@ --- Automatically extracted autoloads.\n\
+	;;; Code:\n\
+	(add-to-list 'load-path\n\
+	             (or (file-name-directory load-file-name) (car load-path)))\n\
+	" >$@
 	$(EMACS) --batch --eval '(setq generated-autoload-file "'`pwd`'/$@")' -f batch-update-autoloads "."
 
 .PHONY: dist tar
