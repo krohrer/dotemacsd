@@ -23,7 +23,7 @@
       (rmail-highlight-face . rmail-highlight)
       (view-highlight-face . highlight)
       (widget-mouse-face . highlight))
-     (default ((t (:stipple nil :background "#051e3e" :foreground "#eeeeee" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 116 :width normal :family "adobe-courier"))))
+     ;(default ((t (:stipple nil :background "#051e3e" :foreground "#eeeeee" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 116 :width normal :family "adobe-courier"))))
      (Info-title-1-face ((t (:bold t :weight bold :height 1.728 :family "helv"))))
      (Info-title-2-face ((t (:bold t :weight bold :height 1.44 :family "helv"))))
      (Info-title-3-face ((t (:bold t :weight bold :height 1.2 :family "helv"))))
@@ -94,9 +94,9 @@
      (font-lock-regexp-grouping-backslash ((t (:bold t :weight bold))))
      (font-lock-regexp-grouping-construct ((t (:bold t :weight bold))))
      (font-lock-string-face ((t (:foreground "LawnGreen"))))
-     (font-lock-type-face ((t (:foreground "Green")))) ; CadetBlue1
+     (font-lock-type-face ((t (:foreground "Green" :slant italic :underline nil)))) ; CadetBlue1
      (font-lock-variable-name-face ((t (:foreground "SeaGreen2"))))
-     (font-lock-warning-face ((t (:bold t :foreground "red" :weight bold))))
+     (font-lock-warning-face ((t (:bold t :foreground "orangered" :weight bold))))
      (tuareg-font-lock-error-face ((t (:bold t :background "red" :foreground "yellow" :weight bold))))
      (tuareg-font-lock-governing-face ((t (:bold t :weight bold :foreground "DeepSkyBlue1"))))
      (tuareg-font-lock-interactive-error-face ((t (:foreground "yellow"))))
