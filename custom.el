@@ -18,9 +18,7 @@
  '(time-stamp-format "%U, %3a %3b %2d %02H:%02M:%02S %Z %:y")
  '(tool-bar-mode nil)
  '(truncate-partial-width-windows t)
- '(tuareg-library-path "/opt/local/lib/ocaml")
- '(tuareg-sig-struct-align nil)
- '(tuareg-type-indent 2))
+ '(tuareg-interactive-scroll-to-bottom-on-output t))
 
 ;; Set regular expression rules for syntax coloring
 (custom-set-faces
