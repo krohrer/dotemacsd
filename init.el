@@ -60,6 +60,8 @@
 		  (interactive "p")
 		  (insert "->")))
 
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
 
 ;;; Add melpa repositories for 
 (when (>= emacs-major-version 24)
