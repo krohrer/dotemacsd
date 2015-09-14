@@ -50,6 +50,21 @@
 		  (kmacro-exec-ring-item (quote ([17 tab] 0 "%d"))
 					 arg)))
 
+(global-set-key (kbd "§")
+		(lambda (&optional arg)
+		  (interactive "p")
+		  (insert "_")))
+
+(global-set-key (kbd "±")
+		(lambda (&optional arg)
+		  (interactive "p")
+		  (insert "->")))
+
+;; (global-set-key (kbd "_")
+;; 		(lambda (&optional arg)
+;; 		  (interactive "p")
+;; 		  (insert "->")))
+
 ;;; Add melpa repositories for 
 (when (>= emacs-major-version 24)
   (require 'package)
