@@ -7,11 +7,9 @@
 (color-theme-initialize)
 
 ;;; Customize Tuareg-mode
-(setq tuareg-use-smie nil)
-(load "~/.emacs.d/site-lisp/tuareg/tuareg-site-file")
 (defun tuareg-font-lock-hook ()
    (font-lock-add-keywords nil
-    '(("\\<\\(raise\\|exit\\|assert\\w*\\|fail\\w*\\)\\>"
+    '(("\\<\\(raise\\|exit\\|assert\\w*\\|fail\\w+\\)\\>"
        1 font-lock-warning-face prepend))))
 ;(remove-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
 (add-hook 'tuareg-mode-hook #'tuareg-font-lock-hook)
