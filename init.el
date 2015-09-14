@@ -60,10 +60,6 @@
 		  (interactive "p")
 		  (insert "->")))
 
-;; (global-set-key (kbd "_")
-;; 		(lambda (&optional arg)
-;; 		  (interactive "p")
-;; 		  (insert "->")))
 
 ;;; Add melpa repositories for 
 (when (>= emacs-major-version 24)
