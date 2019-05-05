@@ -6,6 +6,10 @@
 (require 'color-theme)
 (color-theme-initialize)
 
+;;; ocp-indent
+(add-to-list 'load-path "/Users/krohrer/.opam/4.03.0/share/emacs/site-lisp")
+(require 'ocp-indent)
+
 ;;; Customize Tuareg-mode
 (defun tuareg-font-lock-hook ()
    (font-lock-add-keywords nil
@@ -17,8 +21,8 @@
 ;;; Load additional modes
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 
-(add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.markdown" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md" . gfm-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown" . gfm-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 (autoload 'glsl-mode "glsl-mode" nil t)
@@ -69,9 +73,9 @@
   (package-initialize)
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t))
 
+
 ;; Quick merlin setup for EMACS
 ;; https://github.com/the-lambda-church/merlin
-
 (setq opam-share (substring (shell-command-to-string "opam config var share 2> /dev/null") 0 -1))
 
 (add-to-list 'load-path (concat opam-share "/emacs/site-lisp"))
@@ -86,4 +90,3 @@
 (setq merlin-command 'opam)
 
 (add-hook 'tuareg-mode-hook 'merlin-mode)
-
